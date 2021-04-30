@@ -4,6 +4,7 @@
 CC           = gcc
 RCC          = riscv64-unknown-elf-gcc
 ROBJDUMP     = riscv64-unknown-elf-objdump
+e2h          = elf2hex
 LD           = gcc
 AR           = ar
 ARFLAGS      = rcs
@@ -54,7 +55,7 @@ aes.a : aes.o
 lib : aes.a
 
 
-riscv: aes.elf aes.elf.dump
+riscv: aes.elf aes.elf.dump aes.hex
 
 aes.elf: aes.c test.c syscalls.c crt.S
 	echo [RCC] $(RCFLAGS) $< -o $@
@@ -63,6 +64,10 @@ aes.elf: aes.c test.c syscalls.c crt.S
 aes.elf.dump: aes.elf
 	echo [RDUMP] $(ROBJDUMPFLAGS) $<
 	$(ROBJDUMP) $(ROBJDUMPFLAGS) $< > $@
+	
+aes.hex: aes.elf
+	echo [ELF2HEX] $< to $@
+	$(e2h) 8 4194304 $< 2147483648 > $@
 clean:
 	rm -f *.OBJ *.LST *.o *.gch *.out *.hex *.map *.elf *.a *.elf.dump
 
